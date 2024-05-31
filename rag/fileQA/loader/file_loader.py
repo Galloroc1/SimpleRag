@@ -1,6 +1,5 @@
 from abc import ABC
-from rag.fileQA.loader.base import BaseDataLoader,Document,MetaData
-import pandas as pd
+from rag.fileQA.base import BaseDataLoader,Document,MetaData
 import logging
 logger = logging.getLogger(__name__)
 
@@ -67,7 +66,7 @@ class TxtLoader(BaseDataLoader,ABC):
     def load(self):
         text = ""
         try:
-            with open(self.path) as f:
+            with open(self.path,'r') as f:
                 text = f.read()
         except:
             logger.debug("file read fail, we will return empty file", self.path)
