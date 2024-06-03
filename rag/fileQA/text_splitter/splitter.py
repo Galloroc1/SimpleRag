@@ -16,8 +16,16 @@ def split_by_character_lc(text, separator="\n", chunk_size=500, chunk_overlap=10
 
     return text_splitter.split_text(text)
 
+class BaseSplitter:
 
-class CharacterSplitter(CharacterTextSplitter):
+    def split_meta(self,**kwargs):
+        raise
+
+    def split_document(self,data:Document,**kwargs):
+        raise
+
+
+class CharacterSplitter(CharacterTextSplitter,BaseSplitter):
     """
     split text by character
     """

@@ -3,17 +3,6 @@ from abc import ABC, abstractmethod
 from typing import List, Iterator, Any, Iterable
 
 
-class BaseDataLoader(ABC):
-    path = None
-
-    @abstractmethod
-    def load(self):
-        raise
-
-    def parse(self):
-        raise
-
-
 class MetaData:
     source = None
     meta = None
@@ -60,6 +49,9 @@ class MetaData:
         strings = f"lens:{len(self.meta)}\nsource:{self.source}\nmeta:{[out_meta]}"
         return strings
 
+    def __len__(self):
+        return len(self.meta)
+
 
 class Document(Iterable):
 
@@ -85,3 +77,6 @@ class Document(Iterable):
     def __str__(self):
         strings = f"lens:{len(self.metas)}\t\tsource:{self.source}"
         return strings
+
+    def __len__(self):
+        return len(self.metas)

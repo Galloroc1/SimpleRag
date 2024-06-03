@@ -11,4 +11,4 @@ def test_text_loader(path):
     for i in data:
         print(i)
 if __name__ == '__main__':
-    test_text_loader("/home/hr/pyproject/SampleRag/samples/txt_test.txt")
+    test_text_loader("/samples/天龙八部.txt")
