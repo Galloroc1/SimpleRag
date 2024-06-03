@@ -10,5 +10,3 @@ if __name__ == '__main__':
     rag = BaseRetrievalAugmentedByEmbedding(question=question,loader=data_loader)
     rag.compute_similarity()
     top_k = rag.topk(5)
-    knowledge = rag.knowledge[top_k]
-    print(knowledge[1])
