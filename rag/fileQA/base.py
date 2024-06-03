@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from typing import List, Iterator, Any, Iterable
+from typing import Union
+from numpy import ndarray
 
 
 class MetaData:
@@ -71,12 +73,29 @@ class Document(Iterable):
     def __iter__(self) -> Iterator[MetaData]:
         return iter(self.metas)
 
-    def __getitem__(self, item: int) -> MetaData:
-        return self.metas[item]
+    def __getitem__(self, item: int) -> Union[List[MetaData],MetaData,List]:
+        if isinstance(item, slice):
+            start, stop, step = item.start, item.stop, item.step
+            return self.metas[start:stop:step]
+        elif isinstance(item, int):
+            return self.metas[item]
+        elif isinstance(item, list):
+            return [self.metas[i] for i in item]
+        elif isinstance(item, ndarray):
+            result = []
+            for index in item:
+                r = [self.metas[i] for i in index]
+                result.append(Document(r,source=self.source))
+            return result
+        else:
+            raise TypeError("Invalid argument type.")
+
 
     def __str__(self):
-        strings = f"lens:{len(self.metas)}\t\tsource:{self.source}"
+        strings = (f"lens:{len(self.metas)}\t\tsource:{self.source}\t"
+                   f"sample data:\n{None if len(self.metas)==0 else self.metas[0]}\n")
         return strings
 
     def __len__(self):
         return len(self.metas)
+

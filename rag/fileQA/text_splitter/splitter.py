@@ -21,7 +21,7 @@ class BaseSplitter:
     def split_meta(self,**kwargs):
         raise
 
-    def split_document(self,data:Document,**kwargs):
+    def split_document(self,document:Document,**kwargs):
         raise
 
 
@@ -37,7 +37,7 @@ class CharacterSplitter(CharacterTextSplitter,BaseSplitter):
                          is_separator_regex=is_separator_regex,
                          length_function=length_function, **kwargs)
 
-    def split_meta(self, meta: MetaData):
+    def split_meta(self, meta: MetaData,**kwargs):
 
         split_texts: List[str] = self.split_text(meta.meta)
         org_source: dict = meta.source
@@ -48,7 +48,7 @@ class CharacterSplitter(CharacterTextSplitter,BaseSplitter):
         new_metas = list(map(lambda new_meta, source: MetaData(new_meta, source), split_texts, new_source))
         return new_metas
 
-    def split_document(self, document: Document):
+    def split_document(self, document: Document,**kwargs):
         r = list(map(lambda x: self.split_meta(x), document))
         new_document = Document(reduce(lambda item1, item2: item1 + item2, r), source=document.source)
         return new_document
