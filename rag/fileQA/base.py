@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List, Iterator, Any, Iterable
 from typing import Union
 from numpy import ndarray
+import numpy as np
 
 
 class MetaData:
@@ -77,7 +78,7 @@ class Document(Iterable):
         if isinstance(item, slice):
             start, stop, step = item.start, item.stop, item.step
             return self.metas[start:stop:step]
-        elif isinstance(item, int):
+        elif isinstance(item, int) or isinstance(item,np.int64) or isinstance(item,np.int32):
             return self.metas[item]
         elif isinstance(item, list):
             return [self.metas[i] for i in item]
