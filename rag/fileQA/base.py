@@ -74,27 +74,27 @@ class Document(Iterable):
     def __iter__(self) -> Iterator[MetaData]:
         return iter(self.metas)
 
-    def __getitem__(self, item: int) -> Union[List[MetaData],MetaData,List]:
+    def __getitem__(self, item: int) -> Union[List[MetaData],MetaData,'Document']:
+
         if isinstance(item, slice):
             start, stop, step = item.start, item.stop, item.step
-            return self.metas[start:stop:step]
+            new_obj = self.metas[start:stop:step]
+            if len(new_obj)==1:
+                new_obj = [new_obj]
         elif isinstance(item, int) or isinstance(item,np.int64) or isinstance(item,np.int32):
-            return self.metas[item]
-        elif isinstance(item, list):
-            return [self.metas[i] for i in item]
-        elif isinstance(item, ndarray):
-            result = []
-            for index in item:
-                r = [self.metas[i] for i in index]
-                result.append(Document(r,source=self.source))
-            return result
+            new_obj = [self.metas[item]]
+        elif isinstance(item, list) or isinstance(item,ndarray):
+            new_obj = [self.metas[i] for i in item]
         else:
             raise TypeError("Invalid argument type.")
-
+        return Document(new_obj, source=self.source)
 
     def __str__(self):
+        strs = ""
+        for i in self.metas:
+            strs = strs + i.__str__()+"\n"
         strings = (f"lens:{len(self.metas)}\t\tsource:{self.source}\t"
-                   f"sample data:\n{None if len(self.metas)==0 else self.metas[0]}\n")
+                   f"\n{strs}\n")
         return strings
 
     def __len__(self):
