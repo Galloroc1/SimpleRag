@@ -68,6 +68,7 @@ class EmbeddingBgeM3(BaseEmbedding):
         return embeddings
 
 
+
 if __name__ == '__main__':
     model = EmbeddingBgeM3()
     sentences = ['hello','my friends']

@@ -40,7 +40,7 @@ def get_answer(question,kl):
 
 
 if __name__ == '__main__':
-    knowledge =  test_text_loader("/home/hr/pyproject/SampleRag/samples/天龙八部.txt")
+    knowledge =  test_text_loader("/samples/天龙八部.txt")
     question = ["天龙八部中的龙指什么?"]
     max_args = get_max_scores_index(question,knowledge)
     must_like_sentences = knowledge[max_args]
