@@ -1,6 +1,8 @@
 import os
 import sys
-sys.path.append("/home/hr/pyproject/SampleRag/")
+from pathlib import Path
+root_path = str(Path.cwd().parents[2])
+sys.path.append(root_path)
 from rag.fileQA.loader.file_loader import TxtLoader
 from rag.fileQA.text_splitter.splitter import CharacterSplitter
 from rich import print

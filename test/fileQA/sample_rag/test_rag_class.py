@@ -1,6 +1,8 @@
 import os
 import sys
-sys.path.append("/home/hr/pyproject/SampleRag/")
+from pathlib import Path
+root_path = str(Path.cwd().parents[2])
+sys.path.append(root_path)
 from rag.fileQA.loader.file_loader import TxtLoader
 from rag.fileQA.core import BaseRetrievalAugmentedByEmbedding
 from rich import  print
@@ -10,3 +12,4 @@ if __name__ == '__main__':
     rag = BaseRetrievalAugmentedByEmbedding(question=question,loader=data_loader)
     rag.compute_similarity()
     top_k = rag.topk(5)
+    print(top_k[0][0])
