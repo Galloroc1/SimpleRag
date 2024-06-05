@@ -102,7 +102,7 @@ class TxtLoader(BaseDataLoader,ABC):
         if len(text)==0:
             raise f"{self.path} has not content"
         data = MetaData(meta=text, source={"path":self.path, "type":"txt"})
-        return Document([data], source=self.path)
+        return Document([data], source={"path":self.path, "type":"txt"})
 
 class HtmlLoader(BaseDataLoader,ABC):
 
@@ -135,5 +135,5 @@ class HtmlLoader(BaseDataLoader,ABC):
         else:
             raise print(f'Failed to retrieve the page. Status code: {response.status_code}')
         data = MetaData(meta=text, source={"path":self.path, "type":"url"})
-        return Document([data], source=self.path)
+        return Document([data], source={"path":self.path, "type":"url"})
 
