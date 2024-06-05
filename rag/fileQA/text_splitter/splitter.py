@@ -11,7 +11,7 @@ def split_by_character_lc(text, separator="\n", chunk_size=500, chunk_overlap=10
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         length_function=len,
-        is_separator_regex=False,
+        # is_separator_regex=False,
     )
 
     return text_splitter.split_text(text)
@@ -34,7 +34,7 @@ class CharacterSplitter(CharacterTextSplitter,BaseSplitter):
         super().__init__(separator=separator,
                          chunk_size=chunk_size,
                          chunk_overlap=chunk_overlap,
-                         is_separator_regex=is_separator_regex,
+                         # is_separator_regex=is_separator_regex,
                          length_function=length_function, **kwargs)
 
     def split_meta(self, meta: MetaData,**kwargs):
