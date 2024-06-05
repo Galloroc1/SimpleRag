@@ -14,8 +14,9 @@ if __name__ == '__main__':
     data:Document = data_loader.load()
     knowledge:Document = spliter.split_document(data)
 
-    question = ["天龙八部中的龙指什么?","八部指什么"]
+    question = "天龙八部中的龙指什么?"
     rag = RankEmbedding(question=question, knowledge=knowledge)
     rag.compute_similarity()
     top_k = rag.topk(5)
+    print(top_k)
 

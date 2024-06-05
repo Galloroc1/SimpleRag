@@ -45,7 +45,7 @@ class RankEmbedding(BaseRank):
     def compute_similarity(self,):
         knowledge_embeddings = self.embedding.encode_document(self.knowledge)
         question_embeddings = self.embedding.encode([self.question])
-        self.scores = question_embeddings @ knowledge_embeddings.T
+        self.scores = (question_embeddings @ knowledge_embeddings.T)[0]
         self.scores_sort_arg = np.argsort(self.scores)
 
 

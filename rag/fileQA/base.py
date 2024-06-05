@@ -82,7 +82,8 @@ class Document(Iterable):
             if len(new_obj)==1:
                 new_obj = [new_obj]
         elif isinstance(item, int) or isinstance(item,np.int64) or isinstance(item,np.int32):
-            new_obj = [self.metas[item]]
+            new_obj = self.metas[item]
+            return new_obj
         elif isinstance(item, list) or isinstance(item,ndarray):
             new_obj = [self.metas[i] for i in item]
         else:
