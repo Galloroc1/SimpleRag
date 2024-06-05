@@ -1,5 +1,4 @@
 import abc
-
 from FlagEmbedding import BGEM3FlagModel
 from typing import List
 from rag.fileQA.base import MetaData,Document

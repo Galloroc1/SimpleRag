@@ -10,19 +10,15 @@ from rag.fileQA.rank import RankEmbedding
 from rag.fileQA.base import Document
 from rich import  print
 if __name__ == '__main__':
-    data_loader = TxtLoader("/home/hr/pyproject/SampleRag/samples/天龙八部.txt")
+    data_loader = TxtLoader(os.path.join(root_path,"samples/天龙八部.txt"))
     spliter = CharacterSplitter()
     data:Document = data_loader.load()
     knowledge:Document = spliter.split_document(data)
 
     question = "天龙八部中的龙指什么?"
-    rank = RankEmbedding(question=question, knowledge=knowledge)
-    rank.rank()
-    knowledge = rank.topk(5)
-    print(rank.scores)
-    rag = RerankerBge(question=question, knowledge=knowledge)
-    rag.rank()
-    top_k = rag.topk(3)
-    print(rag.scores)
-
+    rank = RankEmbedding()
+    knowledge = rank.topk(question=question, knowledge=knowledge)
+    rerank = RerankerBge()
+    top_k = rerank.topk(question=question, knowledge=knowledge)
+    print(top_k)
 

@@ -15,6 +15,8 @@ from rag.fileQA.template import PromptTemplate,apply_prompt_template
 import tempfile
 
 model = QwenApi()
+rank = RankEmbedding()
+rerank = RerankerBge()
 
 st.title("simple rag")
 
@@ -57,14 +59,10 @@ if prompt := st.chat_input("What is up?"):
         knowledge: Document = spliter.split_document(data)
 
         # rank get top 20
-        rank = RankEmbedding(question=question, knowledge=knowledge)
-        rank.rank()
-        knowledge = rank.topk(20)
+        knowledge = rank.topk(question=question, knowledge=knowledge,k=20)
 
         # rerank get top 3
-        rerank = RerankerBge(question=question, knowledge=knowledge)
-        rerank.rank()
-        top_k: Document = rerank.topk(3)
+        top_k: Document = rerank.topk(question=question, knowledge=knowledge,k=3)
 
         # apply prompt template
         template = apply_prompt_template(prompt=PromptTemplate(), question=question, knowledge=top_k)
