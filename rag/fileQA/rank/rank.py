@@ -16,15 +16,14 @@ class BaseRank:
     scores = None
     scores_sort_arg = None
 
-    def compute_similarity(self):
+    def rank(self):
         pass
 
 
-    def topk(self,k=5)->List[Document]:
+    def topk(self,k=5)->Document:
         if self.knowledge is None or self.scores is None:
             raise AttributeError("you should compute similarity before")
-        print(self.scores_sort_arg)
-        top_k_args = self.scores_sort_arg[-k:][::-1]
+        top_k_args = self.scores_sort_arg[0:k]
         return self.knowledge[top_k_args]
 
 
@@ -42,11 +41,11 @@ class RankEmbedding(BaseRank):
         self.embedding = embedding()
 
 
-    def compute_similarity(self,):
+    def rank(self,):
         knowledge_embeddings = self.embedding.encode_document(self.knowledge)
         question_embeddings = self.embedding.encode([self.question])
         self.scores = (question_embeddings @ knowledge_embeddings.T)[0]
-        self.scores_sort_arg = np.argsort(self.scores)
+        self.scores_sort_arg = np.argsort(self.scores)[::-1]
 
 
 
@@ -62,10 +61,10 @@ class RankBM25(BaseRank):
         self.tokenizer = tokenizer()
 
 
-    def compute_similarity(self):
+    def rank(self):
         tokenized_documents = self.tokenizer.tokenize_multi(self.knowledge)
         bm25 = BM25Okapi(tokenized_documents)
         tokenized_query = self.tokenizer.tokenize(self.question)
         self.scores = np.array(bm25.get_scores(tokenized_query))
-        self.scores_sort_arg = np.argsort(self.scores)
+        self.scores_sort_arg = np.argsort(self.scores)[::-1]
 

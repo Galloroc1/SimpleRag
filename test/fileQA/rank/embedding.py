@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     question = "天龙八部中的龙指什么?"
     rag = RankEmbedding(question=question, knowledge=knowledge)
-    rag.compute_similarity()
+    rag.rank()
     top_k = rag.topk(5)
     print(top_k)
 
