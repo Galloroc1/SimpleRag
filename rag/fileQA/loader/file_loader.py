@@ -1,13 +1,23 @@
+import traceback
+import chardet
 from abc import ABC,abstractmethod
 from rag.fileQA.base import Document,MetaData
 import logging
-
-import requests
 from bs4 import BeautifulSoup
-import os
 import requests
 logger = logging.getLogger(__name__)
 
+
+def detect_encoding(path):
+    """
+    check encoding
+    :return:
+    """
+    with open(path, 'rb') as f:
+        raw_data = f.read()
+        result = chardet.detect(raw_data)
+        encoding = result['encoding']
+    return encoding
 
 class BaseDataLoader(ABC):
     path = None
@@ -75,16 +85,19 @@ class JsonLoader(BaseDataLoader,ABC):
 
 
 class TxtLoader(BaseDataLoader,ABC):
-
     def __init__(self, path):
         self.path = path
 
+
+
     def load(self):
         text = ""
+
         try:
-            with open(self.path,'r') as f:
+            with open(self.path, 'r', encoding=detect_encoding(self.path)) as f:
                 text = f.read()
         except:
+            traceback.print_exc()
             logger.debug("file read fail, we will return empty file", self.path)
         if len(text)==0:
             raise f"{self.path} has not content"
