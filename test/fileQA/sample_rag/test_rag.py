@@ -32,13 +32,11 @@ if __name__ == '__main__':
     knowledge:Document = spliter.split_document(data)
 
     question = "天龙八部中的龙指什么?"
-    rank = RankEmbedding(question=question, knowledge=knowledge)
-    rank.rank()
-    knowledge = rank.topk(20)
+    rank = RankEmbedding()
+    knowledge = rank.topk(question=question, knowledge=knowledge,k=20)
 
-    rag = RerankerBge(question=question, knowledge=knowledge)
-    rag.rank()
-    top_k = rag.topk(1)
+    rerank = RerankerBge()
+    top_k = rerank.topk(question=question, knowledge=knowledge,k=1)
     print(top_k)
     response = get_answer(question,top_k)
     print(response)
