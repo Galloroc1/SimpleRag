@@ -5,6 +5,7 @@ from rag.fileQA.base import Document,MetaData
 import logging
 from bs4 import BeautifulSoup
 import requests
+import docx
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +71,16 @@ class DocxLoader(BaseDataLoader,ABC):
 
     def __init__(self, path):
         self.path = path
+
+    def load(self):
+        doc = docx.Document(self.path)
+        full_text = []
+        for para in doc.paragraphs:
+            full_text.append(para.text)
+        text = '\n'.join(full_text)
+
+        data = MetaData(meta=text, source={"path": self.path, "type": "docx"})
+        return Document([data], source={"path": self.path, "type": "docx"})
 
 
 class ExcelLoader(BaseDataLoader,ABC):

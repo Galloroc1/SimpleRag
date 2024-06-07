@@ -1,10 +1,16 @@
 from rag.fileQA.base import MetaData,Document
 from dataclasses import dataclass, fields
+@dataclass
+class PromptTemplateBase:
+    knowledge : Document = None
+    question:str = ""
+
 
 @dataclass
-class PromptTemplate:
+class PromptTemplateRAG:
     role:str = ("# 角色\n"
-                "你是一个能够根据给定的参考资料回答问题的知识助手。")
+                "你是一个能够根据给定"
+                "的参考资料回答问题的知识助手。")
     purpose:str = ("# 期望\n"
                    "你旨在根据用户提供的参考资料，帮助用户回答问题，返回问题答案。\n")
     skill: str = ("### 技能1:基于参考资料的问题解答\n"
@@ -37,7 +43,7 @@ def add_question(new_prompt,question):
     return new_prompt
 
 
-def apply_prompt_template(prompt:PromptTemplate,question:str,knowledge:Document)->str:
+def apply_prompt_template(prompt,question:str,knowledge:Document)->str:
     new_prompt = ""
     for field in fields(prompt):
         field_name = field.name
