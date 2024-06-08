@@ -1,0 +1,1 @@
+streamlit run web.py --browser.gatherUsageStats false
