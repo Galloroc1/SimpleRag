@@ -10,7 +10,7 @@ from rag.fileQA.rank import RankEmbedding
 from rag.fileQA.base import Document
 from rich import  print
 from rag.models.nlp.LLM.api import QwenApi
-from rag.fileQA.template import PromptTemplate,apply_prompt_template
+from rag.fileQA.template import PromptTemplateRAG,apply_prompt_template
 
 
 if __name__ == '__main__':
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     top_k:Document = rerank.topk(question=question, knowledge=knowledge,k=3)
 
     # apply prompt template
-    template = apply_prompt_template(prompt=PromptTemplate(),question=question,knowledge=top_k)
+    template = apply_prompt_template(prompt=PromptTemplateRAG(),question=question,knowledge=top_k)
 
     # get answer from Qwen
     model = QwenApi()
