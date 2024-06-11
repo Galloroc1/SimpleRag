@@ -14,13 +14,14 @@ class MetaData:
     # def __call__(self, *args, **kwargs):
     #     pass
 
-    def __init__(self, meta:str, source:dict,):
+    def __init__(self, meta:str, source:dict,score:float=0.0):
         """
         :param meta:
-        :param source:source is a dict, you can put any thing into therr
+        :param source:source is a dict, you can put anything into their
         """
         self.source = source
         self.meta = meta
+        self.score = score
 
     def update_other_item(self, params: dict):
         """
@@ -49,16 +50,19 @@ class MetaData:
 
     def __str__(self):
         out_meta = self.meta[0:20]+"......"+self.meta[-20:] if len(self.meta)>500 else self.meta
-        strings = f"lens:{len(self.meta)}\nsource:{self.source}\nmeta:{[out_meta]}"
+        strings = f"lens:{len(self.meta)}\nsource:{self.source}\nscore:{self.score}\nmeta:{[out_meta]}"
         return strings
 
     def __len__(self):
         return len(self.meta)
 
+    def __hash__(self):
+        return hash(str(self.meta))
+
 
 class Document(Iterable):
 
-    def __init__(self, metas: List[MetaData], source: dict = None):
+    def __init__(self, metas: List[MetaData], source: dict = None, scores:List[float]=None):
         """
         a Document include some MetaData, just like a List
         source is Document's source, you can put some information into it,
@@ -70,6 +74,7 @@ class Document(Iterable):
         """
         self.metas = metas
         self.source = source
+
 
     def __iter__(self) -> Iterator[MetaData]:
         return iter(self.metas)
@@ -101,3 +106,8 @@ class Document(Iterable):
     def __len__(self):
         return len(self.metas)
 
+    def map(self,function):
+        # todo: may other map and partial
+        print("warning:this function may have some error,use it carefully!")
+        metas = list(map(lambda x:function(x),self.metas))
+        return Document(metas,source=self.source)

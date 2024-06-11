@@ -4,10 +4,11 @@ from rag.fileQA.base import MetaData,Document
 
 
 class BaseTokenizer:
-    pass
+    name = None
 
 
 class TokenizerJieba(BaseTokenizer):
+    name = "TokenizerJieba"
 
     def __init__(self):
         pass
