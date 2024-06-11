@@ -7,7 +7,7 @@ from rag.fileQA.loader.file_loader import TxtLoader
 from rag.fileQA.text_splitter.splitter import CharacterSplitter
 from rag.fileQA.rank.rank import RankBM25
 from rag.fileQA.base import Document
-from rich import  print
+from rich import print
 
 if __name__ == '__main__':
     data_loader = TxtLoader(os.path.join(root_path,"samples/天龙八部.txt"))

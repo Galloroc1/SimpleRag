@@ -62,7 +62,7 @@ class MetaData:
 
 class Document(Iterable):
 
-    def __init__(self, metas: List[MetaData], source: dict = None, scores:List[float]=None):
+    def __init__(self, metas: List[MetaData], source: dict = None):
         """
         a Document include some MetaData, just like a List
         source is Document's source, you can put some information into it,
@@ -75,6 +75,13 @@ class Document(Iterable):
         self.metas = metas
         self.source = source
 
+    def __add__(self, other):
+        if isinstance(other,Document):
+            return Document(self.metas + other.metas, source = self.source)
+        if isinstance(other,MetaData):
+            return Document(self.metas + [other],source=self.source)
+
+        raise TypeError(f"not support type to add {type(other)}")
 
     def __iter__(self) -> Iterator[MetaData]:
         return iter(self.metas)
