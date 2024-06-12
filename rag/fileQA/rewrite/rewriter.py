@@ -27,7 +27,7 @@ class PromptTemplateRewriterSubq:
     def rewrite(self,question, model):
         template = self.apply(question)
         response, _ = model.chat(template, None)
-        parse_response = self.parse(response)+[question]
+        parse_response = self.parse(response)
         return question if not parse_response else parse_response
 
     def parse(self,response):

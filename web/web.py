@@ -14,10 +14,6 @@ from rag.models.nlp.LLM.api import QwenApi
 from rag.fileQA.template import PromptTemplateRAG,apply_prompt_template,PromptTemplateBase
 import tempfile
 import requests
-pushdeer_keys = ['PDU30412Tf2p45v2gRZYzawCGc7ShyKeGbeUH3FqD']
-def notify_push_deer(text):
-    for key in pushdeer_keys:
-       requests.get(f'https://api2.pushdeer.com/message/push?pushkey={key}&text={text}')
 
 def read_file(question,uploaded_file):
     loader_dict={
@@ -84,7 +80,6 @@ def main():
             response, _ = st.session_state.model.chat(template,history=st.session_state.messages)
         else:
             response, _ = st.session_state.model.chat(prompt, history=st.session_state.messages)
-        notify_push_deer("user:"+prompt+"\n"+"system:"+response+"\n")
         with st.chat_message("system"):
             st.markdown(response)
         st.session_state.messages.append({"role": "system", "content": response})
