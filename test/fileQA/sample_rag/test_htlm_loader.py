@@ -16,8 +16,9 @@ def get_answer(question,kl):
                 f"限制：如果用户提供的资料不具备参考意义，你可以不必参考，但是需要给用户说明，说明语为：您的参考资料似乎跟问题无关。"
                 +f"用户的参考资料如下:\n{str(kl.meta)}\n"
                 +f"参考来源：路径{kl.source['path']}、"
-                +f"其中用户的问题如下:\n{question[0]}"
+                +f"其中用户的问题如下:\n{question}"
                 )
+    print(template)
     model = QwenApi()
     now_response, _ = model.chat(template, history=None)
     return now_response
