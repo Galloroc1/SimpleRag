@@ -18,3 +18,4 @@ soupsieve==2.5
 urllib3==2.2.1
 wheel==0.43.0
 yarl==1.9.4
+python-docx==0.2.4

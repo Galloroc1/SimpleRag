@@ -11,16 +11,27 @@ SIMILARITY = {
 
 
 class BaseRank:
+    name = None
+
 
     def _rank(self, question: str, knowledge: Document):
         raise
 
     def topk(self, question, knowledge, k=5) -> Document:
-        _, scores_sort_arg = self._rank(question, knowledge)
-        return knowledge[scores_sort_arg[0:k]]
+        scores, scores_sort_arg = self._rank(question, knowledge)
+        scores_sort_arg = scores_sort_arg[0:k]
+
+        scores = scores[scores_sort_arg]
+        knowledge = knowledge[scores_sort_arg]
+
+        for i,value in enumerate(knowledge):
+            value.score = scores[i]
+            value.source.update({"rank":self.name})
+        return knowledge
 
 
 class RankEmbedding(BaseRank):
+    name = "embedding"
 
     def __init__(self,
                  similar="cos",
@@ -28,6 +39,7 @@ class RankEmbedding(BaseRank):
                  ):
         self.similar = similar
         self.embedding = embedding()
+        self.name = self.name + embedding.name
 
     def _rank(self, question: str, knowledge: Document):
         knowledge_embeddings = self.embedding.encode_document(knowledge)
@@ -38,11 +50,13 @@ class RankEmbedding(BaseRank):
 
 
 class RankBM25(BaseRank):
+    name = "bm25"
 
     def __init__(self,
                  tokenizer=TokenizerJieba,
                  ):
         self.tokenizer = tokenizer()
+        self.name = self.name + tokenizer.name
 
     def _rank(self, question: str, knowledge: Document):
         tokenized_documents = self.tokenizer.tokenize_multi(knowledge)
