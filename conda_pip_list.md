@@ -11,5 +11,9 @@ pip install python-docx
 pip install langchain
 pip install FlagEmbedding -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install rich
-
-
+<<<<<<< ry
+=======
+pip install PyMuPDF -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install marker-pdf  -i https://pypi.tuna.tsinghua.edu.cn/simple
+>>>>>>> main
+```
