@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import requests
 import docx
 logger = logging.getLogger(__name__)
-
+import fitz  # PyMuPDF
 
 def detect_encoding(path):
     """
@@ -33,11 +33,27 @@ class BaseDataLoader(ABC):
 
 class PDFLoader(BaseDataLoader, ABC):
 
-    def __init__(self,path):
+    def __init__(self, path):
         self.path = path
 
     def load(self):
-        pass
+        text = ""
+        try:
+            full_text = []
+            pdf_document = fitz.open(self.path)
+            num_pages = pdf_document.page_count
+            for page_num in range(num_pages):
+                page = pdf_document.load_page(page_num)
+                page_text = page.get_text()
+                full_text.append(page_text)
+            text = '\n'.join(full_text)
+        except:
+            traceback.print_exc()
+            logger.debug("file read fail, we will return empty file", self.path)
+        if len(text) == 0:
+            raise f"{self.path} has not content"
+        data = MetaData(meta=text, source={"path": self.path, "type": "pdf"})
+        return Document([data], source={"path": self.path, "type": "pdf"})
 
 
 class PDFLoaderUnstructured(BaseDataLoader, ABC):
@@ -47,6 +63,7 @@ class PDFLoaderUnstructured(BaseDataLoader, ABC):
 
     def load(self):
         pass
+
 
 
 class CSVLoader(BaseDataLoader,ABC):
@@ -99,11 +116,8 @@ class TxtLoader(BaseDataLoader,ABC):
     def __init__(self, path):
         self.path = path
 
-
-
     def load(self):
         text = ""
-
         try:
             with open(self.path, 'r', encoding=detect_encoding(self.path)) as f:
                 text = f.read()
