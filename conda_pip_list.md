@@ -11,5 +11,5 @@ pip install python-docx
 pip install langchain
 pip install FlagEmbedding -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install rich
-```
+
 

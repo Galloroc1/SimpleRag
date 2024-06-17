@@ -5,6 +5,8 @@ from rag.fileQA.base import MetaData,Document
 from abc import ABC,abstractmethod
 
 class BaseEmbedding(ABC):
+    name = None
+
 
     @abstractmethod
     def encode(self,sentences,**kwargs):
@@ -16,6 +18,7 @@ class BaseEmbedding(ABC):
 
 
 class EmbeddingBgeM3(BaseEmbedding):
+    name = "bgem3"
 
     def __init__(self):
         """

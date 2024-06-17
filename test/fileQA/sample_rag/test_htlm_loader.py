@@ -28,6 +28,7 @@ if __name__ == '__main__':
     path = "https://python.langchain.com/v0.2/docs/introduction/"
     question = "langchain是什么"
     sentence = HtmlLoader(path).load()
-    now_response = get_answer(question,sentence[0])
+    print(f"sentence↓\n{sentence}")
+    now_response = get_answer(question, sentence[0])
     print("question:",question)
     print(now_response)

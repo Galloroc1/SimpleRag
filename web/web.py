@@ -13,6 +13,7 @@ from rich import  print
 from rag.models.nlp.LLM.api import QwenApi
 from rag.fileQA.template import PromptTemplateRAG,apply_prompt_template,PromptTemplateBase
 import tempfile
+import requests
 
 def read_file(question,uploaded_file):
     loader_dict={
@@ -79,7 +80,6 @@ def main():
             response, _ = st.session_state.model.chat(template,history=st.session_state.messages)
         else:
             response, _ = st.session_state.model.chat(prompt, history=st.session_state.messages)
-
         with st.chat_message("system"):
             st.markdown(response)
         st.session_state.messages.append({"role": "system", "content": response})
