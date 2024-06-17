@@ -18,6 +18,7 @@ def get_answer(question,kl):
                 +f"参考来源：路径{kl.source['path']}、"
                 +f"其中用户的问题如下:\n{question}"
                 )
+    print(template)
     model = QwenApi()
     now_response, _ = model.chat(template, history=None)
     return now_response
