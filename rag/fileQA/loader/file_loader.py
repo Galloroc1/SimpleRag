@@ -1,13 +1,17 @@
+import os.path
+import sys
 import traceback
 import chardet
-from abc import ABC,abstractmethod
-from rag.fileQA.base import Document,MetaData
+from abc import ABC, abstractmethod
+from rag.fileQA.base import Document, MetaData
 import logging
 from bs4 import BeautifulSoup
 import requests
 import docx
+
 logger = logging.getLogger(__name__)
-import fitz  # PyMuPDF
+import pymupdf
+
 
 def detect_encoding(path):
     """
@@ -19,6 +23,7 @@ def detect_encoding(path):
         result = chardet.detect(raw_data)
         encoding = result['encoding']
     return encoding
+
 
 class BaseDataLoader(ABC):
     path = None
@@ -36,15 +41,22 @@ class PDFLoader(BaseDataLoader, ABC):
     def __init__(self, path):
         self.path = path
 
+    def save_load_page(self, save_path):
+        os.makedirs(save_path, exist_ok=True)
+        pdf_document = pymupdf.open(self.path)
+        for page in pdf_document:
+            pix = page.get_pixmap()
+            pix.save(os.path.join(save_path, f"page-{page.number}.png"))
+
     def load(self):
         text = ""
         try:
             full_text = []
-            pdf_document = fitz.open(self.path)
+            pdf_document = pymupdf.open(self.path)
             num_pages = pdf_document.page_count
             for page_num in range(num_pages):
                 page = pdf_document.load_page(page_num)
-                page_text = page.get_text()
+                page_text = page.get_text(option='text')
                 full_text.append(page_text)
             text = '\n'.join(full_text)
         except:
@@ -58,33 +70,32 @@ class PDFLoader(BaseDataLoader, ABC):
 
 class PDFLoaderUnstructured(BaseDataLoader, ABC):
 
-    def __init__(self,path):
+    def __init__(self, path):
         self.path = path
 
     def load(self):
         pass
 
 
+class CSVLoader(BaseDataLoader, ABC):
 
-class CSVLoader(BaseDataLoader,ABC):
-
-    def __init__(self,path):
+    def __init__(self, path):
         self.path = path
 
     def load(self):
         pass
 
 
-class DocLoader(BaseDataLoader,ABC):
+class DocLoader(BaseDataLoader, ABC):
 
-    def __init__(self,path):
+    def __init__(self, path):
         self.path = path
 
     def load(self):
         pass
 
 
-class DocxLoader(BaseDataLoader,ABC):
+class DocxLoader(BaseDataLoader, ABC):
 
     def __init__(self, path):
         self.path = path
@@ -100,19 +111,19 @@ class DocxLoader(BaseDataLoader,ABC):
         return Document([data], source={"path": self.path, "type": "docx"})
 
 
-class ExcelLoader(BaseDataLoader,ABC):
+class ExcelLoader(BaseDataLoader, ABC):
 
     def __init__(self, path):
         self.path = path
 
 
-class JsonLoader(BaseDataLoader,ABC):
+class JsonLoader(BaseDataLoader, ABC):
 
     def __init__(self, path):
         self.path = path
 
 
-class TxtLoader(BaseDataLoader,ABC):
+class TxtLoader(BaseDataLoader, ABC):
     def __init__(self, path):
         self.path = path
 
@@ -124,15 +135,15 @@ class TxtLoader(BaseDataLoader,ABC):
         except:
             traceback.print_exc()
             logger.debug("file read fail, we will return empty file", self.path)
-        if len(text)==0:
+        if len(text) == 0:
             raise f"{self.path} has not content"
-        data = MetaData(meta=text, source={"path":self.path, "type":"txt"})
-        return Document([data], source={"path":self.path, "type":"txt"})
-
-class HtmlLoader(BaseDataLoader,ABC):
+        data = MetaData(meta=text, source={"path": self.path, "type": "txt"})
+        return Document([data], source={"path": self.path, "type": "txt"})
 
 
-    def __init__(self,url,short_lens=20):
+class HtmlLoader(BaseDataLoader, ABC):
+
+    def __init__(self, url, short_lens=20):
         self.path = url
         self.short_lens = short_lens
 
@@ -153,12 +164,11 @@ class HtmlLoader(BaseDataLoader,ABC):
 
                 for i, paragraph in enumerate(paragraphs):
                     now_text = paragraph.get_text(strip=True)
-                    if len(now_text)>self.short_lens:
+                    if len(now_text) > self.short_lens:
                         text = text + now_text + "\n"
             except:
                 print("warning:has no sparse anything!")
         else:
             raise print(f'Failed to retrieve the page. Status code: {response.status_code}')
-        data = MetaData(meta=text, source={"path":self.path, "type":"url"})
-        return Document([data], source={"path":self.path, "type":"url"})
-
+        data = MetaData(meta=text, source={"path": self.path, "type": "url"})
+        return Document([data], source={"path": self.path, "type": "url"})

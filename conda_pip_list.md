@@ -15,5 +15,7 @@ pip install rich
 =======
 pip install PyMuPDF -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install marker-pdf  -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install rank-bm25 -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install jieba
 >>>>>>> main
 ```
