@@ -41,7 +41,7 @@ class PDFLoader(BaseDataLoader, ABC):
     def __init__(self, path):
         self.path = path
 
-    def save_load_page(self, save_path):
+    def _save_load_page(self, save_path):
         os.makedirs(save_path, exist_ok=True)
         pdf_document = pymupdf.open(self.path)
         for page in pdf_document:

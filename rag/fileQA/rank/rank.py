@@ -20,7 +20,6 @@ class BaseRank:
     def topk(self, question, knowledge, k=5) -> Document:
         scores, scores_sort_arg = self._rank(question, knowledge)
         scores_sort_arg = scores_sort_arg[0:k]
-
         scores = scores[scores_sort_arg]
         knowledge = knowledge[scores_sort_arg]
 
