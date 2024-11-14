@@ -44,6 +44,8 @@ class BaseTools(ABC, metaclass=ToolMeta):
         for key, value in iters:
             # todo: check params dtype
             # check must
+            print(value.is_must, value)
+            print(key, params)
             if value.is_must and key not in params:
                 return SystemErrorInformation(
                     error_messages={"dtype": "KeyError", "reason": f"key:{key} is must ,but not in params"})
@@ -68,11 +70,12 @@ class BaseTools(ABC, metaclass=ToolMeta):
         return params
 
     @abstractmethod
-    def action(self, params: Dict) -> Dict:
+    def action(self, params: Union[Dict, None] = None) -> Union[Dict, SystemErrorInformation, List[Dict]]:
         raise NotImplementedError
 
-    def call(self, params: Dict) -> Union[Messages, SystemErrorInformation, Dict]:
-        params = self.assert_params(params, is_input_params=True)
+    def call(self, params: Union[Dict, None] = None) -> Union[Messages, SystemErrorInformation, Dict]:
+        if params:
+            params = self.assert_params(params, is_input_params=True)
         if isinstance(params, SystemErrorInformation):
             return params
 
