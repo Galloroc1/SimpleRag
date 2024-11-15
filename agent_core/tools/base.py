@@ -39,13 +39,10 @@ class BaseTools(ABC, metaclass=ToolMeta):
         description = self.input_description if is_input_params else self.output_description
         iters = description.items() if isinstance(description, dict) else description[0].items()
         params = params if isinstance(params, dict) else params[0]
-
         # value: Params
         for key, value in iters:
             # todo: check params dtype
             # check must
-            print(value.is_must, value)
-            print(key, params)
             if value.is_must and key not in params:
                 return SystemErrorInformation(
                     error_messages={"dtype": "KeyError", "reason": f"key:{key} is must ,but not in params"})
@@ -98,6 +95,6 @@ class BaseTools(ABC, metaclass=ToolMeta):
         return str(show_dicts)
 
 
-if __name__ == '__main__':
-    value = registered_tools.values()
-    print(value)
+# if __name__ == '__main__':
+#     value = registered_tools.values()
+#     print(value)

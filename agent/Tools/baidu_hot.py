@@ -1,5 +1,3 @@
-import requests
-
 from agent_core.tools.base import BaseTools
 from typing import Dict, Optional, Union, List
 from agent_core.schema import Params, Messages, SystemErrorInformation
@@ -37,6 +35,6 @@ class BaiduHot(BaseTools):
 if __name__ == '__main__':
     tool = BaiduHot()
     data = tool.call()
-    # print(data)
-    data = Params(description="描述", dtype=str, is_must=False, default="None", param_range=[])
     print(data)
+    # data = Params(description="描述", dtype=str, is_must=False, default="None", param_range=[])
+    # print(data)
