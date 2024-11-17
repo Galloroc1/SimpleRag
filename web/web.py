@@ -10,10 +10,10 @@ from rag.fileQA.rerank.rerank import RerankerBge
 from rag.fileQA.rank import RankEmbedding
 from rag.fileQA.base import Document
 from rich import  print
-from rag.models.nlp.LLM.api import QwenApi
-from rag.fileQA.template import PromptTemplateRAG,apply_prompt_template,PromptTemplateBase
+from LLM.api import QwenApi
+from rag.fileQA.template import apply_prompt_template,PromptTemplateBase
 import tempfile
-import requests
+
 
 def read_file(question,uploaded_file):
     loader_dict={

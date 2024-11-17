@@ -1,4 +1,3 @@
-from abc import ABC,abstractmethod
 from pathlib import Path
 root_path = str(Path.cwd().parents[2])
 import sys
@@ -115,7 +114,7 @@ class ToolsChoice:
 
 if __name__ == '__main__':
 
-    from rag.models.nlp.LLM.api import QwenApi
+    from LLM.api import QwenApi
     question = "我有一个二维矩阵A：[[1,2],[3,4]]，A的每个元素(x,y)代表它在一个8*8的全0矩阵B上对应的(x,y)坐标值为1，输出B矩阵结果"
     print(question)
     model = QwenApi()

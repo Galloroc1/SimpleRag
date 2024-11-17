@@ -1,12 +1,11 @@
 import random
-from http import HTTPStatus
 import os
 from config import api_key
 os.environ['DASHSCOPE_API_KEY'] = api_key
 
 from http import HTTPStatus
 from dashscope import Generation
-from rag.models.nlp.LLM.base import BaseChatModel
+from LLM.base import BaseChatModel
 
 
 class QwenApi(BaseChatModel):

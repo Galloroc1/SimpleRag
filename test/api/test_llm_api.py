@@ -3,7 +3,7 @@ from pathlib import Path
 
 current_path = str(Path(sys.path[0]).resolve().parents[1])
 sys.path.append(current_path)
-from rag.models.nlp.LLM.api import QwenApi
+from LLM.api import QwenApi
 
 # from rich import print
 

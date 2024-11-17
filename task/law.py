@@ -6,9 +6,9 @@ root_path = str(Path.cwd().parents[0])
 sys.path.append(root_path)
 from rag.fileQA.rewrite.rewriter import PromptTemplateRewriterSubq
 from rich import print
-from rag.models.nlp.LLM.api import QwenApi
-from rag.fileQA.loader.file_loader import TxtLoader, DocxLoader
-from rag.fileQA.text_splitter.splitter import CharacterSplitter,BaseSplitter
+from LLM.api import QwenApi
+from rag.fileQA.loader.file_loader import DocxLoader
+from rag.fileQA.text_splitter.splitter import BaseSplitter
 from rag.fileQA.rerank.rerank import RerankerBge, RerankerRRF
 from rag.fileQA.rank import RankEmbedding
 from rag.fileQA.base import Document,MetaData

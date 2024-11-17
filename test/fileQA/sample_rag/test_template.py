@@ -1,4 +1,3 @@
-import os
 import sys
 from pathlib import Path
 root_path = str(Path.cwd().parents[2])
@@ -9,7 +8,7 @@ from rag.fileQA.rerank.rerank import RerankerBge
 from rag.fileQA.rank import RankEmbedding
 from rag.fileQA.base import Document
 from rich import  print
-from rag.models.nlp.LLM.api import QwenApi
+from LLM.api import QwenApi
 from rag.fileQA.template import PromptTemplateRAG,apply_prompt_template
 
 

@@ -2,8 +2,6 @@ import os
 import sys
 from pathlib import Path
 
-from rag.models.nlp.LLM.api import QwenApi
-
 current_path = str(Path(sys.path[0]).resolve().parents[2])
 sys.path.append(current_path)
 from rag.fileQA.loader.file_loader import TxtLoader,DocxLoader, PDFLoader

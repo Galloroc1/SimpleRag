@@ -8,11 +8,10 @@ current_path = str(Path(sys.path[0]).resolve().parents[2])
 sys.path.append(current_path)
 from rag.fileQA.loader.file_loader import TxtLoader, DocxLoader, PDFLoader
 from rag.fileQA.text_splitter.splitter import CharacterSplitter
-from rag.fileQA.rerank.rerank import RerankerBge, RerankerRRF
-from rag.fileQA.rank import RankEmbedding, RankBM25
+from rag.fileQA.rank import RankBM25
 from rag.fileQA.base import Document
 # from rich import  print
-from rag.models.nlp.LLM.api import QwenApi
+from LLM.api import QwenApi
 
 
 def get_answer(question, kl):

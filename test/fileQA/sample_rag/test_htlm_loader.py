@@ -1,14 +1,10 @@
-import os
 import sys
 from pathlib import Path
 root_path = str(Path.cwd().parents[2])
 sys.path.append(root_path)
 from rag.fileQA.loader.file_loader import HtmlLoader
-from rag.fileQA.text_splitter.splitter import CharacterSplitter
-from rag.models.nlp.embeddings.embedding import EmbeddingBgeM3
 from rich import print
-import numpy as np
-from rag.models.nlp.LLM.api import QwenApi
+from LLM.api import QwenApi
 
 
 def get_answer(question,kl):
