@@ -1,50 +1,81 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from config import cache_path
-from base import BaseChatModel
+import json
+
+from LLM.base import BaseChatModel
+import dashscope
+from config import qwen_api_key
 
 
 class Qwen(BaseChatModel):
     MODEL_NAME = "qwen"
-    model = None
-    tokenizer = None
 
-    def __init__(self,device="cuda"):
-        self.device = device
+    def __init__(self,version="qwen-plus"):
+        self.version = version
 
-    def load_model(self):
-        self.model = AutoModelForCausalLM.from_pretrained(
-            "Qwen/Qwen1.5-32B-Chat",
-            torch_dtype="auto",
-            device_map="auto",
-            cache_dir=cache_path,
-        )
-        self.tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen1.5-32B-Chat", cache_dir=cache_path)
-
-
-    def chat(self,prompt,history):
+    def apply_chat_template(self,prompt,history,role_prompt):
+        if not role_prompt:
+            role_prompt = "You are a helpful assistant."
         if not history:
             messages = [
-                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "system", "content": role_prompt},
                 {"role": "user", "content": prompt}
             ]
         else:
             messages = history+[{"role": "user", "content": prompt}]
+        return messages
 
-        text = self.tokenizer.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True
+
+    def stream_chat(self,prompt,history,role_prompt=None,
+                    only_content=True):
+        """
+        流式对话接口
+        
+        Args:
+            prompt (str): 用户输入的提示语
+            history (list): 对话历史记录
+            role_prompt (str, optional): 角色设定提示语. Defaults to None.
+            
+        Yields:
+            response: 流式生成的回复内容
+            
+        Example:
+            >>> qwen = Qwen(version="qwen-plus")
+            >>> prompt = "你好"
+            >>> history = []
+            >>> for response in qwen.stream_chat(prompt, history):
+            ...     print(response)
+        """
+        messages = self.apply_chat_template(prompt,history,role_prompt)
+
+        responses = dashscope.Generation.call(
+            api_key=qwen_api_key,
+            model=self.version,
+            messages=messages,
+            result_format='message',
+            stream=True,
+            incremental_output=True
         )
-        model_inputs = self.tokenizer([text], return_tensors="pt").to(self.device)
+        for response in responses:
+            if only_content:
+                role, response = self._parse_content(response=response)
+                yield response
 
-        generated_ids = self.model.generate(
-            model_inputs.input_ids,
-            max_new_tokens=512
-        )
-        generated_ids = [
-            output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids)
-        ]
+    def chat(self,prompt,history,role_prompt=None,only_content=True):
+        messages = self.apply_chat_template(prompt,history,role_prompt)
+        response = dashscope.Generation.call(
+            api_key=qwen_api_key,
+            model=self.version,
+            messages=messages,
+            result_format='message'
+            )
 
-        response = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
-        new_history = messages + [{"role": "system", "content": response}]
-        return response,new_history
+        response = self._parse_content(response) if only_content else response
+        return response
+
+    def _parse_content(self, response):
+        content = json.loads(str(response))
+        output = content['output']['choices'][0]['message']
+        role = output['role']
+        response = output['content']
+        return role,response
+
+

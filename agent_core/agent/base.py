@@ -44,10 +44,6 @@ class Agent:
         self.input_description = input_description
         self.output_description = output_description
 
-    @property
-    def _template(self):
-        return ""
-
     def plan(self, plan_text=None):
         if not plan_text:
             pass
@@ -197,15 +193,7 @@ class Task():
 
 
 
-
-
-
 if __name__ == '__main__':
-    # game_agent = Task(name="tom",
-    #                   llm=BaseChatModel,
-    #                        input_description="帮助用户获取如下内容：英雄里面现版本最强的上单top5",
-    #                        output_description="英雄联盟现版本最强的5个上单，"
-    #                                           "包括中文名称和英文名称以及胜率")
     task = Task()
     result = task.call()
     for i in result:
