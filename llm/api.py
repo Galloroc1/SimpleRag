@@ -5,7 +5,7 @@ os.environ['DASHSCOPE_API_KEY'] = api_key
 
 from http import HTTPStatus
 from dashscope import Generation
-from LLM.base import BaseChatModel
+from llm.base import BaseChatModel
 
 
 class QwenApi(BaseChatModel):

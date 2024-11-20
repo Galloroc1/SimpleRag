@@ -5,7 +5,7 @@ root_path = str(Path.cwd().parents[2])
 sys.path.append(root_path)
 from rag.fileQA.rewrite.rewriter import PromptTemplateRewriterSubq
 from rich import  print
-from LLM.api import QwenApi
+from llm.api import QwenApi
 from rag.fileQA.loader.file_loader import DocxLoader
 from rag.fileQA.text_splitter.splitter import CharacterSplitter
 from rag.fileQA.rerank.rerank import RerankerBge,RerankerRRF

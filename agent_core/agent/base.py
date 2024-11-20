@@ -2,24 +2,22 @@ from typing import List
 
 from agent_core.schema import SystemErrorInformation
 from agent_core.tools.base import BaseTools
-from LLM.base import BaseChatModel
+from llm.base import BaseChatModel
 from typing import Dict, Union
 
 
 CONTENT = """
 # 角色
-你是一个擅长任务规划的助手，能够合理利用手中资源为用户制定详细计划，并将任务拆分为一个个子任务。你会一步步思考，给出计划后暂停等待子任务的执行结果，用"pause"表示暂停。
-
+你是一个擅长任务规划的助手，能够合理利用手中工具或代理为用户制定详细计划，并将任务拆分为一个个子任务。你会一步步思考，给出计划后暂停等待子任务的执行结果
 ## 技能
 ### 技能 1: 制定任务计划
 1. 当用户提出需求时，仔细分析需求，确定需要完成的主要任务。
 2. 将主要任务拆分为具体的子任务，并依次列出。
-3. 对于每个子任务，评估所需资源，如 python 代码执行器、天气查询工具或热搜查询工具等。
+3. 对于每个子任务，评估所需资源。
 4. 给出第一个子任务，并暂停等待执行结果。
 ===回复示例===
    - 子任务 1: <具体子任务描述>
    - 所需资源: <如果需要特定资源，列出资源名称>
-   - pause
 ===示例结束===
 5. 综合分析最终结果。执行完所有子任务之后，汇总结果报告给用户。
 ## 限制:
@@ -31,7 +29,8 @@ CONTENT = """
 
 class Agent:
     description = "base agent"
-
+    input_description = ""
+    output_description = ""
     def __init__(self, name,
                  llm,
                  input_description,
@@ -68,6 +67,15 @@ class Agent:
     def call(self, params: Dict):
         plan_text = self.plan()
 
+    @classmethod
+    def information(cls):
+        strings = (f"name:{cls.__name__}\n description：{cls.description}\n"
+                   f"输入期望：{cls.input_description}\n"
+                   f"输出期望：{cls.output_description}\n")
+        return strings
+
+    def __str__(self):
+        return self.information
 
 class LolAgent(Agent):
     description = "英雄联盟小助手,帮助用户提供英雄联盟的相应消息。"
@@ -94,7 +102,7 @@ class DotaAgent(Agent):
 
 
 class GameAgent(Agent):
-    description = "能够为用户提供网络游戏参考."
+    description = "能够为用户提供所有的网络游戏参考.主要包括英雄联盟及Dota"
     input_description = ""
     output_description = ""
 
@@ -107,26 +115,20 @@ class GameAgent(Agent):
         super().__init__(name,llm,input_description,output_description,tools)
 
 
-
-
     def call(self, params: Union[Dict,None]):
         if not params:
             pass
 
 class Task():
 
-    def __init__(self):
+    def __init__(self,llm):
         self.tools:List[Agent] = [GameAgent]
+        self.llm = llm
 
 
     def apply_template(self,query):
-        # todo: bug here
-        tools = "现有的工具如下".join(item.description+"希望输入:"+
-                                      item.input_description+"希望输出："+
-                                      item.output_description
-                                      for item in self.tools)
-        content = CONTENT+tools+query
-        return content
+        tools = "现有的代理如下:\n"+"".join(item.information() for item in self.tools)
+        return tools
 
     def test_chat(self,content,add_value=0):
         # 此处模拟model输出
@@ -174,18 +176,17 @@ class Task():
     def call(self,query=None):
         query = "帮我查询英雄联盟里面现版本最强的上单top3"
         content = self.apply_template(query)
-        all_response = ""
+        print(content)
         add_value = 0
 
+        item = 0
         while True:
             now_response = ""
-            for i in self.test_chat(content,add_value):
+            for i in self.llm.stream_chat(prompt=query,history=[],role_prompt=CONTENT+content):
                 now_response = now_response + i
+                print(now_response)
                 yield i
-
-            if self.check_stop(now_response):
-                break
-
+            input()
             tool, params = self.parse_params(now_response)
             # result not used here
             # result = self.action(tool, params)
@@ -194,7 +195,9 @@ class Task():
 
 
 if __name__ == '__main__':
-    task = Task()
+    from llm.qwen import Qwen
+
+    task = Task(llm=Qwen())
     result = task.call()
     for i in result:
         print(i,end="")

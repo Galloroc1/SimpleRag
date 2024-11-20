@@ -1,6 +1,6 @@
 import json
 
-from LLM.base import BaseChatModel
+from llm.base import BaseChatModel
 import dashscope
 from config import qwen_api_key
 

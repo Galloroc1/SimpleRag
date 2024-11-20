@@ -11,7 +11,7 @@ from rag.fileQA.text_splitter.splitter import CharacterSplitter
 from rag.fileQA.rank import RankBM25
 from rag.fileQA.base import Document
 # from rich import  print
-from LLM.api import QwenApi
+from llm.api import QwenApi
 
 
 def get_answer(question, kl):
