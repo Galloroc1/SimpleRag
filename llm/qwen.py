@@ -1,7 +1,9 @@
 import json
 
 from llm.base import BaseChatModel
+
 import dashscope
+# from dashscope.common.logging
 from config import qwen_api_key
 
 
@@ -20,7 +22,7 @@ class Qwen(BaseChatModel):
                 {"role": "user", "content": prompt}
             ]
         else:
-            messages = history+[{"role": "user", "content": prompt}]
+            messages = [{"role": "system", "content": role_prompt}]+history+[{"role": "user", "content": prompt}]
         return messages
 
 
