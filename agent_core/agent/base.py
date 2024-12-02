@@ -1,29 +1,35 @@
 from typing import List
-
+import sys
+sys.path.append("/home/icaro/pyproject/SimpleRag")
+import os
+os.environ['DASHSCOPE_LOGGING_LEVEL'] = "info"
 from agent_core.schema import SystemErrorInformation
 from agent_core.tools.base import BaseTools
-from LLM.base import BaseChatModel
+from llm.base import BaseChatModel
 from typing import Dict, Union
 
 
 CONTENT = """
 # 角色
-你是一个擅长任务规划的助手，能够合理利用手中资源为用户制定详细计划，并将任务拆分为一个个子任务。你会一步步思考，给出计划后暂停等待子任务的执行结果，用"pause"表示暂停。
+你是一个擅长任务规划的助手，能够合理利用手中工具或代理为用户制定详细计划。你会一步步思考，逐步给当前所需子任务并暂停等待子任务的执行结果.
 
-## 技能
-### 技能 1: 制定任务计划
-1. 当用户提出需求时，仔细分析需求，确定需要完成的主要任务。
-2. 将主要任务拆分为具体的子任务，并依次列出。
-3. 对于每个子任务，评估所需资源，如 python 代码执行器、天气查询工具或热搜查询工具等。
-4. 给出第一个子任务，并暂停等待执行结果。
-===回复示例===
-   - 子任务 1: <具体子任务描述>
-   - 所需资源: <如果需要特定资源，列出资源名称>
-   - pause
-===示例结束===
-5. 综合分析最终结果。执行完所有子任务之后，汇总结果报告给用户。
+首先判断历史内容和当前结果是否能够满足用户，如果是is_wait则为False，表明完成任务，无需等待，否则为True
+然后思考当前步骤要做什么，给定purpose content。
+然后需要使用哪些tool或agent，
+最后以json格式返回结果。
+
+返回示例：
+思维链：<思考过程>
+```json
+{
+    "is_wait":<is parse>,
+    "purpose":<purpose content>
+    "tool":<tool name>,
+    "agent":<agent name>,
+}
+
 ## 限制:
-- 仅使用给定的资源进行任务规划和执行。
+- 仅使用给定的工具或代理进行任务规划和执行。
 - 严格按照技能中的步骤进行操作，不得随意更改流程。
 - 所输出的内容必须按照给定的格式进行组织，不能偏离框架要求。
 """
@@ -31,7 +37,8 @@ CONTENT = """
 
 class Agent:
     description = "base agent"
-
+    input_description = ""
+    output_description = ""
     def __init__(self, name,
                  llm,
                  input_description,
@@ -68,6 +75,15 @@ class Agent:
     def call(self, params: Dict):
         plan_text = self.plan()
 
+    @classmethod
+    def information(cls):
+        strings = (f"name:{cls.__name__}\n description：{cls.description}\n"
+                   f"输入期望：{cls.input_description}\n"
+                   f"输出期望：{cls.output_description}\n")
+        return strings
+
+    def __str__(self):
+        return self.information
 
 class LolAgent(Agent):
     description = "英雄联盟小助手,帮助用户提供英雄联盟的相应消息。"
@@ -81,20 +97,23 @@ class LolAgent(Agent):
         super().__init__(name,llm,input_description,output_description,tools)
 
 
-class DotaAgent(Agent):
-    description = "data小助手,帮助用户提供dota的相应消息。"
+class WeatherAgent(Agent):
+    description = "天气助手，查询今天天气"
+    input_description = ""
+    output_description = ""
 
     def __init__(self,
                  name,
                  llm,
-                 input_description,
-                 output_description,
-                 tools):
+                 tools,
+                 input_description="用户需求",
+                 output_description="需求结果",
+                 ):
         super().__init__(name, llm, input_description, output_description, tools)
 
 
 class GameAgent(Agent):
-    description = "能够为用户提供网络游戏参考."
+    description = "能够为用户提供所有的网络游戏参考"
     input_description = ""
     output_description = ""
 
@@ -107,54 +126,22 @@ class GameAgent(Agent):
         super().__init__(name,llm,input_description,output_description,tools)
 
 
-
-
     def call(self, params: Union[Dict,None]):
         if not params:
             pass
 
+
 class Task():
 
-    def __init__(self):
-        self.tools:List[Agent] = [GameAgent]
+    def __init__(self,llm):
+        self.tools:List = [GameAgent,WeatherAgent]
+        self.llm = llm
 
 
     def apply_template(self,query):
-        # todo: bug here
-        tools = "现有的工具如下".join(item.description+"希望输入:"+
-                                      item.input_description+"希望输出："+
-                                      item.output_description
-                                      for item in self.tools)
-        content = CONTENT+tools+query
-        return content
+        tools = "现有的代理如下:\n"+"".join(item.information() for item in self.tools)
+        return tools
 
-    def test_chat(self,content,add_value=0):
-        # 此处模拟model输出
-        if not add_value:
-            data = """
-            首先我们分析这属于游戏助手的内容，我们直接捕获游戏助手返回的内容即可。
-            - 子任务1：用户希望英雄里面现版本最强的上单top3
-            - 工具：GameAgent
-            - 输入:[无]
-            - parse
-            """
-        elif add_value==1:
-            data = """
-            当前子任务执行结果为：[{'name':'剑圣','score':'52%'},
-            {'name':'蛮王','score':'51%'},
-            {'name':'赵信','score':'50%'}]
-            """
-        elif add_value==2:
-            data = """
-            当前版本最强top3上单为剑圣，胜率52%;蛮王，胜率51%;赵信，胜率50%.
-            """
-        elif add_value==3:
-            data = """
-            stop
-            """
-
-        for i in data:
-            yield i
 
     def check_parse(self,response):
         return 'parse' in response
@@ -172,29 +159,32 @@ class Task():
 
 
     def call(self,query=None):
-        query = "帮我查询英雄联盟里面现版本最强的上单top3"
         content = self.apply_template(query)
-        all_response = ""
         add_value = 0
-
+        item = 0
+        history = []
         while True:
-            now_response = ""
-            for i in self.test_chat(content,add_value):
-                now_response = now_response + i
-                yield i
-
-            if self.check_stop(now_response):
-                break
-
-            tool, params = self.parse_params(now_response)
+            new_content = ""
+            for i in self.llm.stream_chat(prompt=query,history=history,role_prompt=CONTENT+content):
+                print(i,end="")
+                new_content = new_content + i
+            answer = input()
+            history = history+[{"role":"user","content":query},
+                               {"role":"system","content":new_content},
+                               {"role":"user","content":answer}]
+            print(history)
+            # tool, params = self.parse_params(now_response)
             # result not used here
             # result = self.action(tool, params)
-            add_value = add_value + 1
+            # add_value = add_value + 1
 
 
 
 if __name__ == '__main__':
-    task = Task()
-    result = task.call()
+    from llm.qwen import Qwen
+
+    task = Task(llm=Qwen())
+    query = input("please input your query")
+    result = task.call(query)
     for i in result:
         print(i,end="")

@@ -10,7 +10,7 @@ from rag.fileQA.rerank.rerank import RerankerBge
 from rag.fileQA.rank import RankEmbedding
 from rag.fileQA.base import Document
 from rich import  print
-from LLM.api import QwenApi
+from llm.api import QwenApi
 from rag.fileQA.template import apply_prompt_template,PromptTemplateBase
 import tempfile
 

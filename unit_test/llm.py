@@ -1,4 +1,4 @@
-from LLM.qwen import Qwen
+from llm.qwen import Qwen
 
 
 def test_qwen_chat():
