@@ -8,10 +8,10 @@ from config import qwen_api_key
 class Qwen(BaseChatModel):
     MODEL_NAME = "qwen"
 
-    def __init__(self,version="qwen-plus"):
+    def __init__(self, version="qwen-plus"):
         self.version = version
 
-    def apply_chat_template(self,prompt,history,role_prompt):
+    def apply_chat_template(self, prompt, history, role_prompt):
         if not role_prompt:
             role_prompt = "You are a helpful assistant."
         if not history:
@@ -20,11 +20,10 @@ class Qwen(BaseChatModel):
                 {"role": "user", "content": prompt}
             ]
         else:
-            messages = history+[{"role": "user", "content": prompt}]
+            messages = history + [{"role": "user", "content": prompt}]
         return messages
 
-
-    def stream_chat(self,prompt,history,role_prompt=None,
+    def stream_chat(self, prompt, history, role_prompt=None,
                     only_content=True):
         """
         流式对话接口
@@ -44,7 +43,7 @@ class Qwen(BaseChatModel):
             >>> for response in qwen.stream_chat(prompt, history):
             ...     print(response)
         """
-        messages = self.apply_chat_template(prompt,history,role_prompt)
+        messages = self.apply_chat_template(prompt, history, role_prompt)
 
         responses = dashscope.Generation.call(
             api_key=qwen_api_key,
@@ -59,14 +58,14 @@ class Qwen(BaseChatModel):
                 role, response = self._parse_content(response=response)
                 yield response
 
-    def chat(self,prompt,history,role_prompt=None,only_content=True):
-        messages = self.apply_chat_template(prompt,history,role_prompt)
+    def chat(self, prompt, history, role_prompt=None, only_content=True):
+        messages = self.apply_chat_template(prompt, history, role_prompt)
         response = dashscope.Generation.call(
             api_key=qwen_api_key,
             model=self.version,
             messages=messages,
             result_format='message'
-            )
+        )
 
         response = self._parse_content(response) if only_content else response
         return response
@@ -76,6 +75,4 @@ class Qwen(BaseChatModel):
         output = content['output']['choices'][0]['message']
         role = output['role']
         response = output['content']
-        return role,response
-
-
+        return role, response
